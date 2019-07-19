@@ -2,16 +2,19 @@ Applying Design Patterns
 Venkat Subramaniam
 venkats@agiledeveloper.com
 @venkat_s
+
+Access:
+URL: https://github.com/venkats/uberconf071919
                    
 Part 0: Design Patterns and Design Principles:
--Fascination towards patterns
--Principles as underpinnings
--Challenges with Patterns
--Identifying Patterns
--Influence of Functional Style
--Some Principles and Patterns
--Exploring OCP
--Exploring DIP
+✓Fascination towards patterns
+✓Principles as underpinnings
+✓Challenges with Patterns
+✓Identifying Patterns
+✓Influence of Functional Style
+✓Some Principles and Patterns
+✓Exploring OCP
+✓Exploring DIP
 -Lambda expressions as a design tool
 -Lambdas and higher order functions
 
