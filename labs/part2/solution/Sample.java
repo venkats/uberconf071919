@@ -1,60 +1,50 @@
 import java.util.*;
-import java.util.stream.*;
-import java.util.function.*;
+import java.io.*;
 
-@SuppressWarnings("unchecked")
-abstract class Writer {
-  private Function<String, String> transformer;
-  
-  public Writer(Function<String, String>... filters) {
-    transformer = Stream.of(filters)
-      .reduce(Function.identity(), Function::andThen);
-  }
-  
-  public void write(String input) {
-    writeContent(transformer.apply(input));
-  }
-  
-  public abstract void writeContent(String input);
-  public abstract String getContents();	
-}
+interface Consumer<T, E extends Exception> {
+  void accept(T input) throws E;
+}                               
 
-@SuppressWarnings("unchecked")
-class StringWriter extends Writer {
-  public StringWriter(Function<String, String>... filters) {
-    super(filters);
-  }
-  
-  private StringBuilder contents = new StringBuilder();
-
-  public void writeContent(String input) {
-  	contents.append(input);
-	}                        
+class Writer {
+	private FileWriter fileWriter;
 	
-	public String getContents() {
-	  return contents.toString();
+	private Writer(String fileName) throws IOException {
+		fileWriter = new FileWriter(fileName);
+	}
+	
+	public Writer writeStuff(String message) throws IOException {
+		fileWriter.write(message);
+		return this;
+	}
+	
+	public void close() throws IOException {
+	  fileWriter.close();
+	}
+
+	public static void use(String fileName, Consumer<Writer, IOException> block) throws IOException {
+	  Writer writer = new Writer(fileName);
+	                       
+	  try {
+	    block.accept(writer);
+	  } finally {
+	    writer.close();
+	  }
 	}
 }
 
-@SuppressWarnings("unchecked")
-public class Sample {  
-  public static void writeToWriter(Writer writer) {
-    writer.write("This is really really stupid!!!");
-    System.out.println(writer.getContents());
-  }
-  
-  public static String removeStupid(String input) {
-    return input.replace("stupid", "s*****");
+public class Sample {
+  public static void useWriter(String fileName) throws IOException {
+		Writer.use(fileName, writer -> 
+		  writer.writeStuff(new java.util.Date().toString())
+		  .writeStuff("See ")
+		  .writeStuff("this "));
   }
 
-  public static void main(String[] args) {
-    writeToWriter(new StringWriter());
-    
-    writeToWriter(new StringWriter(String::toUpperCase));
-    writeToWriter(new StringWriter(String::toLowerCase));
-    writeToWriter(new StringWriter(Sample::removeStupid));
-
-    writeToWriter(new StringWriter(String::toLowerCase, Sample::removeStupid));
-    writeToWriter(new StringWriter(String::toUpperCase, Sample::removeStupid));
-  }
+	public static void main(String[] args) throws IOException {
+    final String fileName = "sample.txt";
+    useWriter(fileName);
+    System.out.println("sample.txt contains the following:");
+    BufferedReader reader = new BufferedReader(new FileReader(fileName));
+    reader.lines().forEach(System.out::println);
+	}
 }
